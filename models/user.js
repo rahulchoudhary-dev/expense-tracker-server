@@ -33,11 +33,6 @@ const User = sequelize.define(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      // set(value) {
-      //   bcrypt.hash(value, saltRounds, function (err, hash) {
-      //     return this.setDataValue("password", hash);
-      //   });
-      // },
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -49,6 +44,7 @@ const User = sequelize.define(
     },
   },
   {
+    paranoid: true,
     hooks: {
       beforeCreate: async (user) => {
         const hash = bcrypt.hashSync(user.password, saltRounds);
