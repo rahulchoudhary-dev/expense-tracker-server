@@ -44,7 +44,7 @@ const User = sequelize.define(
     },
   },
   {
-    paranoid: true,
+    // paranoid: true,
     hooks: {
       beforeCreate: async (user) => {
         const hash = bcrypt.hashSync(user.password, saltRounds);
