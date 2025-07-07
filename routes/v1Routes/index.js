@@ -6,7 +6,7 @@ const categoryRoutes = require("../v1Routes/category");
 const expenseRouter = require("../v1Routes/expense");
 const authRoutes = require("./auth");
 
-router.use("/auth/sigIn", authRoutes);
+router.use("/auth", authRoutes);
 
 router.use("/user", userRoutes);
 router.use("/payment-methods", paymentMethodsRoutes);

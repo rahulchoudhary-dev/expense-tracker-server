@@ -28,9 +28,21 @@ const AuthService = {
       const userObj = user.get({ plain: true });
       delete userObj.password;
 
-      return { userObj, access_token, refresh_token };
+      return { ...userObj, access_token, refresh_token };
     } catch (error) {
       throw handleSequelizeError(error);
+    }
+  },
+  signUpService: async (data) => {
+    try {
+      const user = await User.create(data);
+      delete data.password;
+      return data;
+    } catch (error) {
+      if (error instanceof Sequelize.UniqueConstraintError) {
+        throw new Error("Email already exists");
+      }
+      throw new Error(error.message);
     }
   },
 };
