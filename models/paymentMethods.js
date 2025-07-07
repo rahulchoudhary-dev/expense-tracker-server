@@ -32,7 +32,7 @@ const PaymentMethods = sequelize.define(
   },
 
   {
-    paranoid: true,
+    // paranoid: true,
     hooks: {
       beforeCreate: async (payementMethod) => {
         if (!payementMethod.slug && payementMethod.name) {

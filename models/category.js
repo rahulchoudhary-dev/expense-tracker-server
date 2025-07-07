@@ -30,7 +30,7 @@ const Category = sequelize.define(
     },
   },
   {
-    paranoid: true,
+    // paranoid: true,
     hooks: {
       beforeCreate: (category) => {
         if (!category.slug && category.name) {
