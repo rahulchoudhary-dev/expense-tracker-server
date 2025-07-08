@@ -1,11 +1,11 @@
 const handleSequelizeError = require("../utils/sequelizeErrorHandler");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
-var jwt = require("jsonwebtoken");
 const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../utils/tokenUtils");
+const { Sequelize } = require("sequelize");
 
 const AuthService = {
   signInService: async (data) => {
@@ -42,7 +42,7 @@ const AuthService = {
       if (error instanceof Sequelize.UniqueConstraintError) {
         throw new Error("Email already exists");
       }
-      throw new Error(error.message);
+      throw handleSequelizeError(error);
     }
   },
 };

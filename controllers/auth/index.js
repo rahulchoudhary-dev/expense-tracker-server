@@ -20,7 +20,7 @@ const AuthController = {
       const user = await AuthService.signUpService(userData);
       return successResponse(res, 201, "User created successfully", user);
     } catch (error) {
-      return errorResponse(res, 500, "Error creating user", error.message);
+      return errorResponse(res, 500, error.message, "Error creating user");
     }
   },
 };
