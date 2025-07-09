@@ -7,7 +7,16 @@
   "scripts": {
     "start": "nodemon index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:local": "NODE_ENV=development nodemon index.js",
+    "dev:prod": "NODE_ENV=production node index.js",
+    "migrate:all": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "migration:generate": "npx sequelize-cli migration:generate --name",
+    "seed:all": "npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo",
+    "seed:undo:all": "npx sequelize-cli db:seed:undo:all",
+    "seed:generate": "npx sequelize-cli seed:generate --name"
   },
   "author": "Rahul Choudhary",
   "license": "ISC",
