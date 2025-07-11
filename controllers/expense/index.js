@@ -15,9 +15,9 @@ const ExpenseController = {
     }
   },
   getExpenseSummary: async (req, res) => {
-    const data = req.body;
+    const userId = req.query.userId;
     try {
-      const resp = await ExpenseService.getExpenseSummaryService(data);
+      const resp = await ExpenseService.getExpenseSummaryService(userId);
       return successResponse(res, 200, "fetched", resp);
     } catch (error) {
       return errorResponse(res, 200, error);

@@ -13,8 +13,7 @@ const ExpenseService = {
       throw handleSequelizeError(error);
     }
   },
-  getExpenseSummaryService: async (data) => {
-    const { userId } = data;
+  getExpenseSummaryService: async (userId) => {
     try {
       const expensesSummary = await Expense.findAll({
         where: {
@@ -49,32 +48,10 @@ const ExpenseService = {
         );
       });
 
-      const thisMonthExpenseAmount = currentMonthExpenseData.reduce(
+      const currMonthExpenseAmount = currentMonthExpenseData.reduce(
         (sum, expense) => sum + expense.amount,
         0
       );
-
-      // const categoryGroup = [];
-      // expensesSummary?.map((item) => {
-      //   const catId = item.categoryId;
-      //   const amt = item.amount;
-      //   const found = categoryGroup.find((ite) => ite.catId == catId);
-      //   console.log(found);
-      //   if (found) {
-      //     found.amt += amt;
-      //   } else {
-      //     categoryGroup.push({ catId, amt, name: item.Category.name });
-      //   }
-      // });
-      // const amt = 0;
-      // let topCategoryData = null;
-      // categoryGroup?.map((item) => {
-      //   if (item.amt > amt) {
-      //     topCategoryData = item;
-      //   } else {
-      //     amt = item.amt;
-      //   }
-      // });
 
       const categoryMap = new Map();
       let topCategoryData = null;
@@ -99,12 +76,28 @@ const ExpenseService = {
         }
       });
 
-      return {
-        totalExpense,
-        avgExpense,
-        thisMonthExpenseAmount,
-        topCategoryData,
-      };
+      return [
+        {
+          key: "Total Expense",
+          amount: `$ ${totalExpense}`,
+          otherInfo: `${expensesSummary?.length} Transactions`,
+        },
+        {
+          key: "Avg Expense",
+          amount: `$ ${avgExpense}`,
+          otherInfo: `0.01+ from last month`,
+        },
+        {
+          key: "This Month",
+          amount: `$ ${currMonthExpenseAmount}`,
+          otherInfo: `Per transaction`,
+        },
+        {
+          key: "Top Category",
+          amount: topCategoryData.name,
+          otherInfo: `$ ${topCategoryData.amt}`,
+        },
+      ];
     } catch (error) {
       throw new Error(error.message);
     }
