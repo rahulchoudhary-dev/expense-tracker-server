@@ -10,7 +10,7 @@ router.use("/auth", authRoutes);
 
 router.use("/user", userRoutes);
 router.use("/payment-methods", paymentMethodsRoutes);
-router.use("/category", categoryRoutes);
+router.use("/categories", categoryRoutes);
 
 router.use("/expense", expenseRouter);
 

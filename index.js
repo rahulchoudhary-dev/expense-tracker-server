@@ -2,16 +2,15 @@ const dotenv = require("dotenv");
 dotenv.config();
 const connectToDatabase = require("./config/authenticate.js");
 const express = require("express");
+const routes = require("./routes");
+
 const app = express();
 const cors = require("cors");
 app.use(cors());
-
+connectToDatabase();
 app.use(express.json(express.urlencoded({ extended: true })));
 
-const routes = require("./routes");
-
 const PORT = process.env.PORT || 3000;
-connectToDatabase();
 
 app.get("/", (req, res) => {
   res.send("Expense Tracker Server is running!");
