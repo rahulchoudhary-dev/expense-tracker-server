@@ -14,6 +14,15 @@ const ExpenseController = {
       return errorResponse(res, 500, error);
     }
   },
+  getExpenseSummary: async (req, res) => {
+    const userId = req.query.userId;
+    try {
+      const resp = await ExpenseService.getExpenseSummaryService(userId);
+      return successResponse(res, 200, "fetched", resp);
+    } catch (error) {
+      return errorResponse(res, 200, error);
+    }
+  },
 };
 
 module.exports = ExpenseController;
