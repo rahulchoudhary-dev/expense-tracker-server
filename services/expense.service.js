@@ -32,13 +32,18 @@ const ExpenseService = {
         whereClause.paymentMethodId = filters.paymentMethodId;
       }
       if (filters.q) {
-        whereClause[Op.or] = [
+        const searchConditions = [
           { description: { [Op.iLike]: `%${filters.q}%` } },
-          { amount: { [Op.eq]: filters.q } },
         ];
+
+        if (!isNaN(Number(filters.q))) {
+          searchConditions.push({ amount: { [Op.eq]: Number(filters.q) } });
+        }
+
+        whereClause[Op.or] = searchConditions;
       }
 
-      const expenseData = await Expense.findAll({
+      const { rows, count } = await Expense.findAndCountAll({
         where: { ...whereClause },
         include: [
           { model: Category, attributes: ["id", "name"] },
@@ -48,12 +53,12 @@ const ExpenseService = {
         offset: Number(offset),
       });
 
-      const resp = expenseData?.filter((item) => {
+      const resp = rows?.filter((item) => {
         const expenseMonth = new Date(item.date).getMonth() + 1;
         const expenseYear = new Date(item.date).getFullYear();
         return month == expenseMonth && year == expenseYear;
       });
-      const count = resp?.length;
+      // const count = expenseData?.length;
 
       const data = {
         count,
