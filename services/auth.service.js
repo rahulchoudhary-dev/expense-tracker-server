@@ -22,9 +22,8 @@ const AuthService = {
       if (!isMatch) {
         throw new Error("Password not matched");
       }
-      const payload = { id: user.id, fullName: user.fullName };
-      const access_token = generateAccessToken(payload);
-      const refresh_token = generateRefreshToken(payload);
+      const access_token = generateAccessToken(user);
+      const refresh_token = generateRefreshToken(user);
       const userObj = user.get({ plain: true });
       delete userObj.password;
 
