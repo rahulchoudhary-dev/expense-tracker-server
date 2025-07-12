@@ -14,6 +14,25 @@ const ExpenseController = {
       return errorResponse(res, 500, error);
     }
   },
+  getExpenses: async (req, res) => {
+    const userId = req.user.id;
+    const { categoryId, paymentMethodId, month, year, q, limit, page } =
+      req.query;
+    try {
+      const data = await ExpenseService.getExpenseService(userId, {
+        categoryId,
+        paymentMethodId,
+        month,
+        year,
+        q,
+        limit,
+        page,
+      });
+      return successResponse(res, 200, "fetched", data);
+    } catch (error) {
+      return errorResponse(res, 400, error.message || "Something went wrong.");
+    }
+  },
   getExpenseSummary: async (req, res) => {
     const userId = req.query.userId;
     try {
