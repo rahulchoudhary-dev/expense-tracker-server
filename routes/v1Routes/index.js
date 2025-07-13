@@ -17,6 +17,6 @@ router.use("/categories", authMiddleware, categoryRoutes);
 
 router.use("/expense", authMiddleware, expenseRouter);
 
-router.use("/analytics/charts", authMiddleware, analyticsRoutes);
+router.use("/analytics-charts", authMiddleware, analyticsRoutes);
 
 module.exports = router;

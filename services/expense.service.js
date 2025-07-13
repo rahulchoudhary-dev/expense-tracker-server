@@ -43,8 +43,17 @@ const ExpenseService = {
         whereClause[Op.or] = searchConditions;
       }
 
+      const monthStartDate = new Date(year, month - 1, 1);
+      const monthEndDate = new Date(year, month, 1);
+
       const { rows, count } = await Expense.findAndCountAll({
-        where: { ...whereClause },
+        where: {
+          ...whereClause,
+          date: {
+            [Op.gte]: monthStartDate,
+            [Op.lt]: monthEndDate,
+          },
+        },
         include: [
           { model: Category, attributes: ["id", "name"] },
           { model: PaymentMethods, attributes: ["id", "name"] },
@@ -53,17 +62,11 @@ const ExpenseService = {
         offset: Number(offset),
       });
 
-      const resp = rows?.filter((item) => {
-        const expenseMonth = new Date(item.date).getMonth() + 1;
-        const expenseYear = new Date(item.date).getFullYear();
-        return month == expenseMonth && year == expenseYear;
-      });
-
       const data = {
         count,
         limit,
         page,
-        resp,
+        resp: rows,
       };
       return data;
     } catch (error) {
