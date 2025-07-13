@@ -18,9 +18,19 @@ const AnalyticsController = {
       return errorResponse(res, 400, error.message || "Something went wrong.");
     }
   },
-  getCategoryExpenses: () => {
+  getCategoryExpenses: async (req, res) => {
+    const userId = req.user.id;
+    const { month, year } = req.query;
     try {
-    } catch (error) {}
+      const resp = await AnalyticsService.getCategoryExpensesService(
+        userId,
+        year,
+        month
+      );
+      return successResponse(res, 200, "", resp);
+    } catch (error) {
+      return errorResponse(res, 400, error.message || "Something went wrong.");
+    }
   },
 };
 
