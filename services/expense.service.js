@@ -138,24 +138,28 @@ const ExpenseService = {
 
       return [
         {
-          key: "Total Expense",
-          amount: `$ ${totalExpense}`,
+          lable: "Total Expense",
+          value: `${totalExpense}`,
+          currency: "$",
           otherInfo: `${expensesSummary?.length} Transactions`,
         },
         {
-          key: "Avg Expense",
-          amount: `$ ${avgExpense}`,
+          lable: "Avg Expense",
+          value: `${avgExpense}`,
+          currency: "$",
           otherInfo: `0.01+ from last month`,
         },
         {
-          key: "This Month",
-          amount: `$ ${currMonthExpenseAmount}`,
+          lable: "This Month",
+          value: `${currMonthExpenseAmount}`,
+          currency: "$",
           otherInfo: `Per transaction`,
         },
         {
-          key: "Top Category",
-          amount: topCategoryData.name,
-          otherInfo: `$ ${topCategoryData.amt}`,
+          lable: "Top Category",
+          value: topCategoryData.name,
+          currency: "$",
+          otherInfo: `${topCategoryData.amt}`,
         },
       ];
     } catch (error) {
