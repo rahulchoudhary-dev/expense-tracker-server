@@ -58,7 +58,6 @@ const ExpenseService = {
         const expenseYear = new Date(item.date).getFullYear();
         return month == expenseMonth && year == expenseYear;
       });
-      // const count = expenseData?.length;
 
       const data = {
         count,
