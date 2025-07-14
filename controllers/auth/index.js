@@ -23,6 +23,19 @@ const AuthController = {
       return errorResponse(res, 500, error.message, "Error creating user");
     }
   },
+  refreshToken: async (req, res) => {
+    try {
+      const refreshToken = req.body.refreshToken;
+      if (!refreshToken) {
+        return errorResponse(res, 400, "Refresh token is required");
+      }
+      const data = await AuthService.refreshTokenService(refreshToken);
+      console.log("data", data);
+      return successResponse(res, 200, "Token refreshed successfully", data);
+    } catch (error) {
+      return errorResponse(res, 500, error.message, "Error refreshing token");
+    }
+  },
 };
 
 module.exports = AuthController;

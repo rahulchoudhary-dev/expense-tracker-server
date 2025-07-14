@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const {
   generateAccessToken,
   generateRefreshToken,
+  verifyRefreshToken,
 } = require("../utils/tokenUtils");
 const { Sequelize } = require("sequelize");
 
@@ -42,6 +43,24 @@ const AuthService = {
         throw new Error("Email already exists");
       }
       throw handleSequelizeError(error);
+    }
+  },
+  refreshTokenService: async (refreshToken) => {
+    console.log("refreshTokenService called with token:", refreshToken);
+    try {
+      const verifyRefreshToken = verifyRefreshToken(refreshToken);
+      if (!verifyRefreshToken) {
+        throw new Error("Invalid refresh token");
+      }
+      const payload = verifyRefreshToken.user;
+      if (!payload) {
+        throw new Error("Invalid token payload");
+      }
+      const newAccesssToken = generateAccessToken(payload);
+      const newRefreshToken = generateRefreshToken(payload);
+      return { newAccesssToken, newRefreshToken };
+    } catch (error) {
+      return handleSequelizeError(error);
     }
   },
 };
