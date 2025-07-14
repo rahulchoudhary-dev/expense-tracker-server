@@ -48,11 +48,11 @@ const AuthService = {
   refreshTokenService: async (refreshToken) => {
     console.log("refreshTokenService called with token:", refreshToken);
     try {
-      const verifyRefreshToken = verifyRefreshToken(refreshToken);
-      if (!verifyRefreshToken) {
+      const verifiedRefreshToken = verifyRefreshToken(refreshToken);
+      if (!verifiedRefreshToken) {
         throw new Error("Invalid refresh token");
       }
-      const payload = verifyRefreshToken.user;
+      const payload = verifiedRefreshToken.user;
       if (!payload) {
         throw new Error("Invalid token payload");
       }
