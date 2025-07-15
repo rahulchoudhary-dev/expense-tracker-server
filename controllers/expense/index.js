@@ -45,11 +45,10 @@ const ExpenseController = {
   editExpense: async (req, res) => {
     try {
       const expenseId = req.params.id;
-      console.log("expenseId", expenseId);
-      const data = req.body;
       if (!expenseId) {
         throw new Error("Expense ID is required");
       }
+      const data = req.body;
       const resp = await ExpenseService.editExpenseService(expenseId, data);
       return successResponse(res, 200, "Expense updated successfully", resp);
     } catch (error) {
