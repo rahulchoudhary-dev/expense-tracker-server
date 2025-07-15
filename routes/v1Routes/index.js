@@ -11,7 +11,7 @@ const authMiddleware = require("../../middleware/authMiddleware");
 
 router.use("/auth", authRoutes);
 
-router.use("/user", userRoutes);
+router.use("/user", authMiddleware, userRoutes);
 router.use("/payment-methods", authMiddleware, paymentMethodsRoutes);
 router.use("/categories", authMiddleware, categoryRoutes);
 
