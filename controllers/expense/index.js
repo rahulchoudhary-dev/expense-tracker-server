@@ -42,6 +42,30 @@ const ExpenseController = {
       return errorResponse(res, 200, error);
     }
   },
+  editExpense: async (req, res) => {
+    try {
+      const expenseId = req.params.id;
+      console.log("expenseId", expenseId);
+      const data = req.body;
+      if (!expenseId) {
+        throw new Error("Expense ID is required");
+      }
+      const resp = await ExpenseService.editExpenseService(expenseId, data);
+      return successResponse(res, 200, "Expense updated successfully", resp);
+    } catch (error) {
+      return errorResponse(res, 400, error.message || "Something went wrong.");
+    }
+  },
+  deleteExpense: async (req, res) => {
+    try {
+      const expenseId = req.params.id;
+      if (!expenseId) {
+        throw new Error("Expense ID is required");
+      }
+      await ExpenseService.deleteExpenseService(expenseId);
+      return successResponse(res, 200, "Expense deleted successfully");
+    } catch (error) {}
+  },
 };
 
 module.exports = ExpenseController;

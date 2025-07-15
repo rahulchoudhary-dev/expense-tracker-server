@@ -166,6 +166,27 @@ const ExpenseService = {
       throw new Error(error.message);
     }
   },
+  editExpenseService: async (expenseId, data) => {
+    try {
+      const resp = await Expense.update(data, {
+        where: {
+          id: expenseId,
+        },
+        returning: true,
+      });
+      return resp[1][0];
+    } catch (error) {
+      return handleSequelizeError(error);
+    }
+  },
+  deleteExpenseService: async (expenseId) => {
+    try {
+      const resp = await Expense.destroy({ where: { id: expenseId } });
+      return resp;
+    } catch (error) {
+      return handleSequelizeError(error);
+    }
+  },
 };
 
 module.exports = ExpenseService;
