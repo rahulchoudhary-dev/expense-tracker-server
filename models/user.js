@@ -34,6 +34,33 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    bio: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    role: {
+      type: DataTypes.ENUM("user", "admin"),
+      allowNull: false,
+      defaultValue: "user",
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      default: true,
+      allowNull: false,
+    },
+    subscriptionStatus: {
+      type: DataTypes.ENUM("free", "premium", "trial"),
+      defaultValue: "trial",
+      allowNull: false,
+    },
+    phone: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
