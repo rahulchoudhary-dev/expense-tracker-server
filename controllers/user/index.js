@@ -19,7 +19,22 @@ const userController = {
       return errorResponse(res, 400, error.message || "Something went wrong.");
     }
   },
-  deleteUser: (req, res) => {},
+  deleteUser: async (req, res) => {},
+  uploadProfileImage: async (req, res) => {
+    const filePath = req.file.path;
+    const userId = req.user.id;
+    try {
+      const response = await userService.uploadProfileImage(filePath, userId);
+      return successResponse(
+        res,
+        200,
+        "User profile updated successfully",
+        response
+      );
+    } catch (error) {
+      return errorResponse(res, 400, error.message || "Something went wrong.");
+    }
+  },
 };
 
 module.exports = userController;

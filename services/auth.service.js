@@ -7,14 +7,17 @@ const {
   verifyRefreshToken,
 } = require("../utils/tokenUtils");
 const { Sequelize } = require("sequelize");
+const userMedia = require("../models/userMedia");
 
 const AuthService = {
   signInService: async (data) => {
     try {
       const { email, password } = data;
-      console.log("email");
 
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({
+        where: { email },
+        include: [userMedia],
+      });
       if (!user) {
         throw new Error("User not found");
       }

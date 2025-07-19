@@ -8,6 +8,9 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 connectToDatabase();
+
+require("./models/associations.js");
+
 app.use(express.json(express.urlencoded({ extended: true })));
 
 const PORT = process.env.PORT || 3000;
