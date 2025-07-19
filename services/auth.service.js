@@ -16,7 +16,12 @@ const AuthService = {
 
       const user = await User.findOne({
         where: { email },
-        include: [userMedia],
+        include: [
+          {
+            model: userMedia,
+            as: "userMedia",
+          },
+        ],
       });
       if (!user) {
         throw new Error("User not found");
