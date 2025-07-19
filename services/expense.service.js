@@ -4,6 +4,8 @@ const handleSequelizeError = require("../utils/sequelizeErrorHandler.js");
 const User = require("../models/user.js");
 const Category = require("../models/category.js");
 const PaymentMethods = require("../models/paymentMethods.js");
+const cloudinary = require("../utils/upload.js");
+const ExpenseAttachment = require("../models/expenseAttachments.js");
 
 const ExpenseService = {
   createExpenseService: async (data) => {
@@ -183,6 +185,30 @@ const ExpenseService = {
     try {
       const resp = await Expense.destroy({ where: { id: expenseId } });
       return resp;
+    } catch (error) {
+      return handleSequelizeError(error);
+    }
+  },
+  uploadExpenseAttachmentService: async (files, userId, expenseId) => {
+    try {
+      for (const file of files) {
+        console.log("file", file);
+        const res = await cloudinary.v2.uploader.upload(file.path, {
+          overwrite: true,
+        });
+
+        const data = {
+          attachmentUrl: res.secure_url,
+          public_id: res.public_id,
+          format: res.format,
+          resource_type: res.resource_type,
+          userId,
+          expenseId,
+        };
+
+        await ExpenseAttachment.create(data);
+      }
+      return "Attachments added successfully.";
     } catch (error) {
       return handleSequelizeError(error);
     }
