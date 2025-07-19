@@ -65,6 +65,26 @@ const ExpenseController = {
       return successResponse(res, 200, "Expense deleted successfully");
     } catch (error) {}
   },
+  uploadExpeneAttachments: async (req, res) => {
+    const files = req.files;
+    const userId = req.user.id;
+    const expenseId = req.body.expenseId;
+    try {
+      const response = await ExpenseService.uploadExpenseAttachmentService(
+        files,
+        userId,
+        expenseId
+      );
+      return successResponse(
+        res,
+        200,
+        "Expense aattachment successfully",
+        response
+      );
+    } catch (error) {
+      return errorResponse(res, 400, error.message || "Something went wrong.");
+    }
+  },
 };
 
 module.exports = ExpenseController;
