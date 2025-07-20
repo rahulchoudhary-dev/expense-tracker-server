@@ -14,12 +14,12 @@ const ExpenseController = {
       return errorResponse(res, 500, error);
     }
   },
-  getExpenses: async (req, res) => {
+  getAllExpenses: async (req, res) => {
     const userId = req.user.id;
     const { categoryId, paymentMethodId, month, year, q, limit, page } =
       req.query;
     try {
-      const data = await ExpenseService.getExpenseService(userId, {
+      const data = await ExpenseService.getAllExpensesService(userId, {
         categoryId,
         paymentMethodId,
         month,
@@ -33,6 +33,22 @@ const ExpenseController = {
       return errorResponse(res, 400, error.message || "Something went wrong.");
     }
   },
+  getExpenseById: async (req, res) => {
+    const { expenseId } = req.params;
+    if (!expenseId) {
+      return errorResponse(res, 400, "Expense ID is required");
+    }
+    try {
+      const expense = await ExpenseService.getExpenseByIdService(expenseId);
+      if (!expense) {
+        return errorResponse(res, 404, "Expense not found");
+      }
+      return successResponse(res, 200, "Expense fetched successfully", expense);
+    } catch (error) {
+      return errorResponse(res, 500, error?.message || "Internal Server Error");
+    }
+  },
+
   getExpenseSummary: async (req, res) => {
     const userId = req.query.userId;
     try {
@@ -65,7 +81,7 @@ const ExpenseController = {
       return successResponse(res, 200, "Expense deleted successfully");
     } catch (error) {}
   },
-  uploadExpeneAttachments: async (req, res) => {
+  uploadExpenseAttachments: async (req, res) => {
     const files = req.files;
     const userId = req.user.id;
     const expenseId = req.body.expenseId;
