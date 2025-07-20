@@ -44,18 +44,18 @@ const User = sequelize.define(
     },
     role: {
       type: DataTypes.ENUM("user", "admin"),
-      allowNull: false,
+      allowNull: true,
       defaultValue: "user",
     },
     isActive: {
       type: DataTypes.BOOLEAN,
       default: true,
-      allowNull: false,
+      allowNull: true,
     },
     subscriptionStatus: {
       type: DataTypes.ENUM("free", "premium", "trial"),
       defaultValue: "trial",
-      allowNull: false,
+      allowNull: true,
     },
     phone: {
       type: DataTypes.TEXT,
