@@ -48,7 +48,6 @@ const ExpenseController = {
       return errorResponse(res, 500, error?.message || "Internal Server Error");
     }
   },
-
   getExpenseSummary: async (req, res) => {
     const userId = req.query.userId;
     try {
@@ -79,7 +78,9 @@ const ExpenseController = {
       }
       await ExpenseService.deleteExpenseService(expenseId);
       return successResponse(res, 200, "Expense deleted successfully");
-    } catch (error) {}
+    } catch (error) {
+      return errorResponse(res, 400, error.message || "Something went wrong.");
+    }
   },
   uploadExpenseAttachments: async (req, res) => {
     const files = req.files;
@@ -97,6 +98,20 @@ const ExpenseController = {
         "Expense aattachment successfully",
         response
       );
+    } catch (error) {
+      return errorResponse(res, 400, error.message || "Something went wrong.");
+    }
+  },
+  deleteExpenseAttachment: async (req, res) => {
+    const attachmentId = req.params.attachmentId;
+    if (!attachmentId) {
+      return errorResponse(res, 400, "Attachment ID is required.");
+    }
+    try {
+      const result = await ExpenseService.deleteExpenseAttachmentById(
+        attachmentId
+      );
+      return successResponse(res, 200, "", result.message);
     } catch (error) {
       return errorResponse(res, 400, error.message || "Something went wrong.");
     }

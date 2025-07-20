@@ -6,6 +6,8 @@ const Category = require("../models/category.js");
 const PaymentMethods = require("../models/paymentMethods.js");
 const cloudinary = require("../utils/upload.js");
 const ExpenseAttachment = require("../models/expenseAttachments.js");
+const sequelize = require("../config/database.js");
+const fs = require("fs");
 
 const ExpenseService = {
   createExpenseService: async (data) => {
@@ -213,10 +215,11 @@ const ExpenseService = {
   uploadExpenseAttachmentService: async (files, userId, expenseId) => {
     try {
       for (const file of files) {
-        console.log("file", file);
-        const res = await cloudinary.v2.uploader.upload(file.path, {
+        const filePath = file.path;
+        const res = await cloudinary.v2.uploader.upload(filePath, {
           overwrite: true,
         });
+        fs.unlinkSync(filePath);
 
         const data = {
           attachmentUrl: res.secure_url,
@@ -231,6 +234,26 @@ const ExpenseService = {
       }
       return "Attachments added successfully.";
     } catch (error) {
+      return handleSequelizeError(error);
+    }
+  },
+  deleteExpenseAttachmentById: async (attachmentId) => {
+    try {
+      const attachmentData = await ExpenseAttachment.findOne({
+        where: { id: attachmentId },
+      });
+      if (!attachmentData) {
+        throw new Error("Attachment Not found");
+      }
+      const public_id = attachmentData?.public_id;
+      await cloudinary.v2.uploader.destroy(public_id);
+
+      await ExpenseAttachment.destroy({
+        where: { id: attachmentId },
+      });
+      return { message: "Deleted successfully" };
+    } catch (error) {
+      console.log("error", error.message);
       return handleSequelizeError(error);
     }
   },
