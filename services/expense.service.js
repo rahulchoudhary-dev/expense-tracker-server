@@ -65,6 +65,7 @@ const ExpenseService = {
         ],
         limit: Number(limit),
         offset: Number(offset),
+        order: [["id", "DESC"]],
       });
 
       const data = {
@@ -216,10 +217,10 @@ const ExpenseService = {
     try {
       for (const file of files) {
         const filePath = file.path;
+
         const res = await cloudinary.v2.uploader.upload(filePath, {
           overwrite: true,
         });
-        fs.unlinkSync(filePath);
 
         const data = {
           attachmentUrl: res.secure_url,
@@ -231,6 +232,7 @@ const ExpenseService = {
         };
 
         await ExpenseAttachment.create(data);
+        await fs.unlinkSync(filePath);
       }
       return "Attachments added successfully.";
     } catch (error) {
