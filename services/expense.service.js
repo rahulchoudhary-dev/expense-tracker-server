@@ -17,7 +17,7 @@ const ExpenseService = {
     }
   },
 
-  getExpenseService: async (userId, filters) => {
+  getAllExpensesService: async (userId, filters) => {
     const { month, year, limit, page } = filters;
     const offset = page * limit;
     try {
@@ -59,6 +59,7 @@ const ExpenseService = {
         include: [
           { model: Category, attributes: ["id", "name"] },
           { model: PaymentMethods, attributes: ["id", "name"] },
+          { model: ExpenseAttachment, as: "attachments" },
         ],
         limit: Number(limit),
         offset: Number(offset),
@@ -71,6 +72,26 @@ const ExpenseService = {
         resp: rows,
       };
       return data;
+    } catch (error) {
+      throw handleSequelizeError(error);
+    }
+  },
+  getExpenseByIdService: async (expenseId) => {
+    try {
+      const resp = await Expense.findOne({
+        where: {
+          id: expenseId,
+        },
+        include: [
+          { model: Category, attributes: ["id", "name"] },
+          { model: PaymentMethods, attributes: ["id", "name"] },
+          { model: ExpenseAttachment, as: "attachments" },
+        ],
+      });
+      if (!resp) {
+        throw new Error("Expense Not Found");
+      }
+      return resp;
     } catch (error) {
       throw handleSequelizeError(error);
     }
