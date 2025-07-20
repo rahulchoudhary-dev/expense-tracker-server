@@ -20,4 +20,9 @@ router.post(
   ExpenseController.uploadExpenseAttachments
 );
 
+router.delete(
+  "/delete-attachment/:attachmentId",
+  ExpenseController.deleteExpenseAttachment
+);
+
 module.exports = router;
