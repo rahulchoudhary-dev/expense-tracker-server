@@ -21,7 +21,7 @@ const userController = {
   },
   deleteUser: async (req, res) => {},
   uploadProfileImage: async (req, res) => {
-    const filePath = req.files.path;
+    const filePath = req.file.path;
     const userId = req.user.id;
     try {
       const response = await userService.uploadProfileImage(filePath, userId);
