@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require("sequelize");
+const { Op } = require("sequelize");
 const Expense = require("../models/expense.js");
 const handleSequelizeError = require("../utils/sequelizeErrorHandler.js");
 const User = require("../models/user.js");
@@ -6,7 +6,6 @@ const Category = require("../models/category.js");
 const PaymentMethods = require("../models/paymentMethods.js");
 const cloudinary = require("../utils/upload.js");
 const ExpenseAttachment = require("../models/expenseAttachments.js");
-const sequelize = require("../config/database.js");
 const fs = require("fs");
 
 const ExpenseService = {
@@ -21,7 +20,8 @@ const ExpenseService = {
 
   getAllExpensesService: async (userId, filters) => {
     const { month, year, limit, page } = filters;
-    const offset = page * limit;
+    console.log(limit, page);
+    const offset = (page - 1) * limit;
     try {
       if (!month || !year) {
         throw new Error("Month and year are required.");
@@ -63,9 +63,10 @@ const ExpenseService = {
           { model: PaymentMethods, attributes: ["id", "name"] },
           { model: ExpenseAttachment, as: "attachments" },
         ],
+        order: [["id", "DESC"]],
         limit: Number(limit),
         offset: Number(offset),
-        order: [["id", "DESC"]],
+        distinct: true,
       });
 
       const data = {
