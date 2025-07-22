@@ -38,7 +38,7 @@ const AuthService = {
 
       return { ...userObj, access_token, refresh_token };
     } catch (error) {
-      throw handleSequelizeError(error);
+      return handleSequelizeError(error);
     }
   },
   signUpService: async (data) => {

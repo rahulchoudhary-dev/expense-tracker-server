@@ -6,7 +6,6 @@ const {
 
 const AuthController = {
   signIn: async (req, res) => {
-    console.log("data");
     try {
       const result = await AuthService.signInService(req.body);
       return successResponse(res, 200, "Login successful", result);
