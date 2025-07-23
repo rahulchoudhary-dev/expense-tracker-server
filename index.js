@@ -1,17 +1,18 @@
 const dotenv = require("dotenv");
 dotenv.config();
+
 const connectToDatabase = require("./config/authenticate.js");
 const express = require("express");
 const routes = require("./routes");
+const cors = require("cors");
 
 const app = express();
-const cors = require("cors");
+app.use(express.json(express.urlencoded({ extended: true })));
 app.use(cors());
+
 connectToDatabase();
 
 require("./models/associations.js");
-
-app.use(express.json(express.urlencoded({ extended: true })));
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,23 +1,23 @@
 const Category = require("../models/category");
 const handleSequelizeError = require("../utils/sequelizeErrorHandler");
 
-const CategoryService = {
-  getAllCategoryService: async () => {
+const categoryService = {
+  getAllCategory: async () => {
     try {
-      const data = await Category.findAll();
-      return data;
+      const result = await Category.findAll();
+      return result;
     } catch (error) {
-      throw new Error(error.message);
+      throw handleSequelizeError(error);
     }
   },
-  createCategoryService: async (data) => {
+  createCategory: async (data) => {
     try {
-      const resp = await Category.create(data);
-      return resp;
+      const result = await Category.create(data);
+      return result;
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
 };
 
-module.exports = CategoryService;
+module.exports = categoryService;

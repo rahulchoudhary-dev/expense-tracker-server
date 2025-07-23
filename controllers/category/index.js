@@ -1,17 +1,21 @@
-const CategoryService = require("../../services/category.service");
+const categoryService = require("../../services/category.service");
 const {
   successResponse,
   errorResponse,
 } = require("../../utils/responseHandler");
-const handleSequelizeError = require("../../utils/sequelizeErrorHandler");
 
-const CategoryController = {
+const categoryController = {
   getAllCategory: async (req, res) => {
     try {
-      const data = await CategoryService.getAllCategoryService();
-      return successResponse(res, 200, "", data);
+      const result = await categoryService.getAllCategory();
+      return successResponse(
+        res,
+        200,
+        "Categories fetched successfully",
+        result
+      );
     } catch (error) {
-      return errorResponse(res, 500, error);
+      return errorResponse(res, 500, "Failed to fetch categories", error.stack);
     }
   },
   createCategory: async (req, res) => {
@@ -26,11 +30,11 @@ const CategoryController = {
     }
     const data = req.body;
     try {
-      const resp = await CategoryService.createCategoryService(data);
-      return successResponse(res, 201, "category created successfully", resp);
+      const result = await categoryService.createCategory(data);
+      return successResponse(res, 201, "category created successfully", result);
     } catch (error) {
-      return errorResponse(res, 500, "category not created", error.message);
+      return errorResponse(res, 500, "category not created", error.stack);
     }
   },
 };
-module.exports = CategoryController;
+module.exports = categoryController;

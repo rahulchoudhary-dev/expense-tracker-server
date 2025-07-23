@@ -1,4 +1,3 @@
-const { Sequelize } = require("sequelize");
 const User = require("../models/user.js");
 const handleSequelizeError = require("../utils/sequelizeErrorHandler.js");
 const cloudinary = require("../utils/upload.js");
@@ -7,19 +6,17 @@ const userMedia = require("../models/userMedia.js");
 const userService = {
   updateUser: async (userId, userData) => {
     try {
-      delete userData.password;
-      delete userData.confirmPassword;
-      delete userData.id;
+      const { password, confirmPassword, id, ...sanitizedData } = userData;
 
       const user = await User.findOne({ where: { id: userId } });
       if (!user) {
         throw new Error("User not found");
       }
-      const resp = await User.update(userData, {
+      const result = await User.update(sanitizedData, {
         where: { id: userId },
         returning: true,
       });
-      const updatedUser = resp[1][0];
+      const updatedUser = result[1][0];
 
       return updatedUser;
     } catch (error) {
@@ -30,7 +27,7 @@ const userService = {
     try {
       const existingMedia = await userMedia.findOne({ where: { userId } });
 
-      const res = await cloudinary.v2.uploader.upload(filePath, {
+      const uploadResult = await cloudinary.v2.uploader.upload(filePath, {
         overwrite: true,
       });
 
@@ -45,18 +42,18 @@ const userService = {
         });
       }
 
-      const data = {
-        url: res.secure_url,
-        public_id: res.public_id,
-        format: res.format,
-        resource_type: res.resource_type,
+      const newMedia = {
+        url: uploadResult.secure_url,
+        public_id: uploadResult.public_id,
+        format: uploadResult.format,
+        resource_type: uploadResult.resource_type,
         userId,
       };
-      const uploadedData = await userMedia.create(data);
+      const uploadedData = await userMedia.create(newMedia);
 
       return uploadedData;
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
 };

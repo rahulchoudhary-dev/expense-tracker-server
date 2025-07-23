@@ -1,18 +1,18 @@
+const { Sequelize } = require("sequelize");
+const bcrypt = require("bcrypt");
 const handleSequelizeError = require("../utils/sequelizeErrorHandler");
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
+const userMedia = require("../models/userMedia");
 const {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
 } = require("../utils/tokenUtils");
-const { Sequelize } = require("sequelize");
-const userMedia = require("../models/userMedia");
 
-const AuthService = {
-  signInService: async (data) => {
+const authService = {
+  signIn: async (userCredentials) => {
     try {
-      const { email, password } = data;
+      const { email, password } = userCredentials;
 
       const user = await User.findOne({
         where: { email },
@@ -35,15 +35,14 @@ const AuthService = {
       const refresh_token = generateRefreshToken(user);
       const userObj = user.get({ plain: true });
       delete userObj.password;
-
       return { ...userObj, access_token, refresh_token };
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
-  signUpService: async (data) => {
+  signUp: async (data) => {
     try {
-      const user = await User.create(data);
+      await User.create(data);
       delete data.password;
       return data;
     } catch (error) {
@@ -53,8 +52,7 @@ const AuthService = {
       throw handleSequelizeError(error);
     }
   },
-  refreshTokenService: async (refreshToken) => {
-    console.log("refreshTokenService called with token:", refreshToken);
+  refreshToken: async (refreshToken) => {
     try {
       const verifiedRefreshToken = verifyRefreshToken(refreshToken);
       if (!verifiedRefreshToken) {
@@ -68,9 +66,9 @@ const AuthService = {
       const newRefreshToken = generateRefreshToken(payload);
       return { newAccesssToken, newRefreshToken };
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
 };
 
-module.exports = AuthService;
+module.exports = authService;
