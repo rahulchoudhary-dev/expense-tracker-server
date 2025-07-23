@@ -1,14 +1,15 @@
 const PaymentMethods = require("../models/paymentMethods");
+const handleSequelizeError = require("../utils/sequelizeErrorHandler");
 
-const PaymentMethodsService = {
-  getPaymentMethodsService: async () => {
+const paymentMethodsService = {
+  getPaymentMethods: async () => {
     try {
-      const data = await PaymentMethods.findAll();
-      return data;
+      const result = await PaymentMethods.findAll();
+      return result;
     } catch (error) {
-      throw new Error(error.message);
+      throw handleSequelizeError(error);
     }
   },
 };
 
-module.exports = PaymentMethodsService;
+module.exports = paymentMethodsService;

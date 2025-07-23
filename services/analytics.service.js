@@ -4,8 +4,8 @@ const handleSequelizeError = require("../utils/sequelizeErrorHandler.js");
 const MONTH_NAMES = require("../constants/index.js");
 const Category = require("../models/category.js");
 
-const AnalyticsService = {
-  getYearlyExpensesService: async (userId, year) => {
+const analyticsService = {
+  getYearlyExpenses: async (userId, year) => {
     try {
       if (!year) {
         throw new Error("year must required");
@@ -44,7 +44,7 @@ const AnalyticsService = {
       throw handleSequelizeError(error);
     }
   },
-  getCategoryExpensesService: async (userId, year, month) => {
+  getCategoryExpenses: async (userId, year, month) => {
     try {
       if (!year || !month) {
         throw new Error("month and year required");
@@ -78,10 +78,10 @@ const AnalyticsService = {
           });
         }
       });
-      const resp = Array.from(categoryMap.values());
+      const result = Array.from(categoryMap.values());
 
       const data = {
-        count: resp?.length,
+        count: result?.length,
         resp,
       };
       return data;
@@ -91,4 +91,4 @@ const AnalyticsService = {
   },
 };
 
-module.exports = AnalyticsService;
+module.exports = analyticsService;

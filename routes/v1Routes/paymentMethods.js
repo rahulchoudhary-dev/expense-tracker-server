@@ -1,8 +1,8 @@
 const express = require("express");
-const PaymentMethodsController = require("../../controllers/paymentMethods/indes.js");
+const paymentMethodsController = require("../../controllers/paymentMethods/indes.js");
 
 const router = express.Router();
 
-router.get("/", PaymentMethodsController.getPayementMethods);
+router.get("/", paymentMethodsController.getPayementMethods);
 
 module.exports = router;

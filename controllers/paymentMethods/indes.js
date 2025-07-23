@@ -4,14 +4,14 @@ const {
   errorResponse,
 } = require("../../utils/responseHandler");
 
-const PaymentMethodsController = {
+const paymentMethodsController = {
   getPayementMethods: async (req, res) => {
     try {
-      const data = await paymentMethodsService.getPaymentMethodsService();
-      return successResponse(res, 200, "", data);
+      const result = await paymentMethodsService.getPaymentMethods();
+      return successResponse(res, 200, "fetched", result);
     } catch (error) {}
-    return errorResponse(res, 500, error);
+    return errorResponse(res, 500, error, error.stack);
   },
 };
 
-module.exports = PaymentMethodsController;
+module.exports = paymentMethodsController;

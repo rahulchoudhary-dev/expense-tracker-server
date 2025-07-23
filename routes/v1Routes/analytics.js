@@ -1,9 +1,9 @@
 const express = require("express");
-const AnalyticsController = require("../../controllers/analytics");
+const analyticsController = require("../../controllers/analytics");
 
 const router = express.Router();
 
-router.get("/yearly-expenses", AnalyticsController.getYearlyExpenses);
-router.get("/category-expenses", AnalyticsController.getCategoryExpenses);
+router.get("/yearly-expenses", analyticsController.getYearlyExpenses);
+router.get("/category-expenses", analyticsController.getCategoryExpenses);
 
 module.exports = router;
