@@ -8,7 +8,7 @@ const cloudinary = require("../utils/upload.js");
 const ExpenseAttachment = require("../models/expenseAttachments.js");
 const fs = require("fs");
 
-const ExpenseService = {
+const expenseService = {
   createExpenseService: async (data) => {
     try {
       const result = await Expense.create(data);
@@ -17,10 +17,8 @@ const ExpenseService = {
       throw handleSequelizeError(error);
     }
   },
-
-  getAllExpensesService: async (userId, filters) => {
+  getAllExpenses: async (userId, filters) => {
     const { month, year, limit, page } = filters;
-    console.log(limit, page);
     const offset = (page - 1) * limit;
     try {
       if (!month || !year) {
@@ -69,18 +67,18 @@ const ExpenseService = {
         distinct: true,
       });
 
-      const data = {
+      const result = {
         count,
         limit,
         page,
         resp: rows,
       };
-      return data;
+      return result;
     } catch (error) {
       throw handleSequelizeError(error);
     }
   },
-  getExpenseByIdService: async (expenseId) => {
+  getExpenseById: async (expenseId) => {
     try {
       const resp = await Expense.findOne({
         where: {
@@ -100,7 +98,7 @@ const ExpenseService = {
       throw handleSequelizeError(error);
     }
   },
-  getExpenseSummaryService: async (userId, filters) => {
+  getExpenseSummary: async (userId, filters) => {
     try {
       const expensesSummary = await Expense.findAll({
         where: {
@@ -123,7 +121,6 @@ const ExpenseService = {
 
       const avgExpense = totalExpense / expensesSummary.length;
 
-      // This Month's Expense
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
 
@@ -190,10 +187,10 @@ const ExpenseService = {
         },
       ];
     } catch (error) {
-      throw new Error(error.message);
+      throw handleSequelizeError(error);
     }
   },
-  editExpenseService: async (expenseId, data) => {
+  editExpense: async (expenseId, data) => {
     try {
       const resp = await Expense.update(data, {
         where: {
@@ -206,7 +203,7 @@ const ExpenseService = {
       return handleSequelizeError(error);
     }
   },
-  deleteExpenseService: async (expenseId) => {
+  deleteExpense: async (expenseId) => {
     try {
       const resp = await Expense.destroy({ where: { id: expenseId } });
       return resp;
@@ -214,7 +211,7 @@ const ExpenseService = {
       return handleSequelizeError(error);
     }
   },
-  uploadExpenseAttachmentService: async (files, userId, expenseId) => {
+  uploadExpenseAttachment: async (files, userId, expenseId) => {
     try {
       for (const file of files) {
         const filePath = file.path;
@@ -233,7 +230,7 @@ const ExpenseService = {
         };
 
         await ExpenseAttachment.create(data);
-        await fs.unlinkSync(filePath);
+        fs.unlinkSync(filePath);
       }
       return "Attachments added successfully.";
     } catch (error) {
@@ -256,10 +253,9 @@ const ExpenseService = {
       });
       return { message: "Deleted successfully" };
     } catch (error) {
-      console.log("error", error.message);
       return handleSequelizeError(error);
     }
   },
 };
 
-module.exports = ExpenseService;
+module.exports = expenseService;

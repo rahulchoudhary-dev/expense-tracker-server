@@ -1,17 +1,17 @@
-const ExpenseService = require("../../services/expense.service");
+const expenseService = require("../../services/expense.service");
 const {
   successResponse,
   errorResponse,
 } = require("../../utils/responseHandler");
 
-const ExpenseController = {
+const expenseController = {
   createExpense: async (req, res) => {
     const data = req.body;
     try {
-      const result = await ExpenseService.createExpenseService(data);
-      return successResponse(res, 200, "", result);
+      const result = await expenseService.createExpenseService(data);
+      return successResponse(res, 201, "Expense Created", result);
     } catch (error) {
-      return errorResponse(res, 500, error);
+      return errorResponse(res, 500, error.message, error.stack);
     }
   },
   getAllExpenses: async (req, res) => {
@@ -19,7 +19,7 @@ const ExpenseController = {
     const { categoryId, paymentMethodId, month, year, q, limit, page } =
       req.query;
     try {
-      const data = await ExpenseService.getAllExpensesService(userId, {
+      const result = await expenseService.getAllExpenses(userId, {
         categoryId,
         paymentMethodId,
         month,
@@ -28,7 +28,7 @@ const ExpenseController = {
         limit,
         page,
       });
-      return successResponse(res, 200, "fetched", data);
+      return successResponse(res, 200, "fetched", result);
     } catch (error) {
       return errorResponse(res, 400, error.message || "Something went wrong.");
     }
@@ -51,10 +51,10 @@ const ExpenseController = {
   getExpenseSummary: async (req, res) => {
     const userId = req.query.userId;
     try {
-      const resp = await ExpenseService.getExpenseSummaryService(userId);
+      const resp = await ExpenseService.getExpenseSummary(userId);
       return successResponse(res, 200, "fetched", resp);
     } catch (error) {
-      return errorResponse(res, 200, error);
+      return errorResponse(res, 200, error.message, error.stack);
     }
   },
   editExpense: async (req, res) => {
@@ -64,7 +64,7 @@ const ExpenseController = {
         throw new Error("Expense ID is required");
       }
       const data = req.body;
-      const resp = await ExpenseService.editExpenseService(expenseId, data);
+      const resp = await expenseService.editExpense(expenseId, data);
       return successResponse(res, 200, "Expense updated successfully", resp);
     } catch (error) {
       return errorResponse(res, 400, error.message || "Something went wrong.");
@@ -76,7 +76,7 @@ const ExpenseController = {
       if (!expenseId) {
         throw new Error("Expense ID is required");
       }
-      await ExpenseService.deleteExpenseService(expenseId);
+      await expenseService.deleteExpense(expenseId);
       return successResponse(res, 200, "Expense deleted successfully");
     } catch (error) {
       return errorResponse(res, 400, error.message || "Something went wrong.");
@@ -87,7 +87,7 @@ const ExpenseController = {
     const userId = req.user.id;
     const expenseId = req.body.expenseId;
     try {
-      const response = await ExpenseService.uploadExpenseAttachmentService(
+      const response = await expenseService.uploadExpenseAttachment(
         files,
         userId,
         expenseId
@@ -118,4 +118,4 @@ const ExpenseController = {
   },
 };
 
-module.exports = ExpenseController;
+module.exports = expenseController;
