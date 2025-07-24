@@ -200,7 +200,7 @@ const expenseService = {
       });
       return resp[1][0];
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
   deleteExpense: async (expenseId) => {
@@ -208,7 +208,7 @@ const expenseService = {
       const resp = await Expense.destroy({ where: { id: expenseId } });
       return resp;
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
   uploadExpenseAttachment: async (files, userId, expenseId) => {
@@ -234,7 +234,7 @@ const expenseService = {
       }
       return "Attachments added successfully.";
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
   deleteExpenseAttachmentById: async (attachmentId) => {
@@ -253,7 +253,7 @@ const expenseService = {
       });
       return { message: "Deleted successfully" };
     } catch (error) {
-      return handleSequelizeError(error);
+      throw handleSequelizeError(error);
     }
   },
 };
