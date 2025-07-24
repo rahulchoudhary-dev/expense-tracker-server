@@ -39,7 +39,7 @@ const expenseController = {
       return errorResponse(res, 400, "Expense ID is required");
     }
     try {
-      const expense = await ExpenseService.getExpenseByIdService(expenseId);
+      const expense = await expenseService.getExpenseById(expenseId);
       if (!expense) {
         return errorResponse(res, 404, "Expense not found");
       }
@@ -51,7 +51,7 @@ const expenseController = {
   getExpenseSummary: async (req, res) => {
     const userId = req.query.userId;
     try {
-      const resp = await ExpenseService.getExpenseSummary(userId);
+      const resp = await expenseService.getExpenseSummary(userId);
       return successResponse(res, 200, "fetched", resp);
     } catch (error) {
       return errorResponse(res, 200, error.message, error.stack);
@@ -108,7 +108,7 @@ const expenseController = {
       return errorResponse(res, 400, "Attachment ID is required.");
     }
     try {
-      const result = await ExpenseService.deleteExpenseAttachmentById(
+      const result = await expenseService.deleteExpenseAttachmentById(
         attachmentId
       );
       return successResponse(res, 200, "", result.message);
