@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");
+const { Sequelize, where } = require("sequelize");
 const bcrypt = require("bcrypt");
 const handleSequelizeError = require("../utils/sequelizeErrorHandler");
 const User = require("../models/user");
@@ -7,7 +7,11 @@ const {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
+  verifyAccessToken,
 } = require("../utils/tokenUtils");
+const PasswordResetOTP = require("../models/passwordResetOTP");
+const sendEmail = require("../utils/email");
+const generateOTP = require("../utils/generateOTP");
 
 const authService = {
   signIn: async (userCredentials) => {
@@ -65,6 +69,79 @@ const authService = {
       const newAccesssToken = generateAccessToken(payload);
       const newRefreshToken = generateRefreshToken(payload);
       return { newAccesssToken, newRefreshToken };
+    } catch (error) {
+      throw handleSequelizeError(error);
+    }
+  },
+  forgotPassword: async (emailId) => {
+    try {
+      const existingUser = await User.findOne({
+        where: {
+          email: emailId,
+        },
+      });
+      if (!existingUser) {
+        throw new Error("not a valid email address");
+      }
+      const otp = generateOTP();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+      const data = {
+        userId: existingUser.id,
+        otp,
+        expiresAt,
+      };
+      await PasswordResetOTP.destroy({
+        where: {
+          userId: existingUser.id,
+        },
+      });
+      await PasswordResetOTP.create(data);
+      const res = await sendEmail(emailId, otp);
+      return { message: "OTP sent to your email." };
+    } catch (error) {
+      console.log("error", error);
+      throw handleSequelizeError(error);
+    }
+  },
+  verifyOTP: async (otp, emailId) => {
+    try {
+      const user = await User.findOne({
+        where: { email: emailId },
+        attributes: ["id", "email"],
+      });
+      console.log("user", user);
+      if (!user) throw new Error("User not found");
+
+      const otpData = await PasswordResetOTP.findOne({
+        where: {
+          userId: user.id,
+          used: false,
+        },
+      });
+      if (otpData.otp != otp) throw new Error("OTP not matched ");
+
+      if (otpData.expiresAt <= new Date()) throw new Error("OTP Expierd");
+      const token = generateAccessToken(user);
+
+      return { message: "OTP verified successfully", resetPasstoken: token };
+    } catch (error) {
+      throw handleSequelizeError(error);
+    }
+  },
+  resetPassword: async (password, emailId, resetPassToken) => {
+    try {
+      const verifiedToken = verifyAccessToken(resetPassToken);
+      console.log("verifiedToken", verifiedToken);
+      if (!verifiedToken) {
+        throw new Error("Token Expierd");
+      }
+
+      const user = await User.findOne({ where: { email: emailId } });
+      if (!user) throw new Error("User not found");
+
+      await user.update({ password });
+      return { message: "Password updated successfully" };
     } catch (error) {
       throw handleSequelizeError(error);
     }
