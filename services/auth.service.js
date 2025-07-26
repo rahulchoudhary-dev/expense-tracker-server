@@ -84,7 +84,7 @@ const authService = {
         throw new Error("not a valid email address");
       }
       const otp = generateOTP();
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+      const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
 
       const data = {
         userId: existingUser.id,
@@ -97,7 +97,7 @@ const authService = {
         },
       });
       await PasswordResetOTP.create(data);
-      const res = await sendEmail(emailId, otp);
+      await sendEmail(emailId, otp);
       return { message: "OTP sent to your email." };
     } catch (error) {
       console.log("error", error);
