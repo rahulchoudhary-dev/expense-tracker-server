@@ -41,14 +41,61 @@ const budgetService = {
       throw handleSequelizeError(error);
     }
   },
-  getBudget: async (userId) => {
+
+  getBudget: async (userId, type) => {
     try {
-      const result = await Budget.findAll({
+      const whereClouse = {};
+      if (type == "all") {
+        whereClouse.userId = userId;
+      } else {
+        whereClouse.userId = userId;
+        whereClouse.type = type;
+      }
+
+      console.log(whereClouse);
+      const { rows, count: totalBudgetCount } = await Budget.findAndCountAll({
         where: {
-          userId,
+          ...whereClouse,
         },
+        distinct: true,
       });
-      return result;
+
+      // Monthly count and sum
+      const monthlyBudgetCount = await Budget.count({
+        where: { userId, type: "monthly" },
+      });
+      const monthlyBudgetSumResult = await Budget.sum("amount", {
+        where: { userId, type: "monthly" },
+      });
+
+      // Yearly count and sum
+      const yearlyBudgetCount = await Budget.count({
+        where: { userId, type: "yearly" },
+      });
+      const yearlyBudgetSumResult = await Budget.sum("amount", {
+        where: { userId, type: "yearly" },
+      });
+
+      // Total sum
+      const totalBudgetSum =
+        (monthlyBudgetSumResult || 0) + (yearlyBudgetSumResult || 0);
+
+      // Return full response
+      return {
+        budgets: rows,
+        summary: {
+          counts: {
+            total: totalBudgetCount,
+            monthly: monthlyBudgetCount,
+            yearly: yearlyBudgetCount,
+          },
+          sums: {
+            total: totalBudgetSum,
+            monthly: monthlyBudgetSumResult || 0,
+            yearly: yearlyBudgetSumResult || 0,
+          },
+        },
+      };
     } catch (error) {
       throw handleSequelizeError(error);
     }
