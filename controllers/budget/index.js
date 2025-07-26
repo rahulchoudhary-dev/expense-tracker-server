@@ -20,11 +20,12 @@ const budgetController = {
   },
   getBudget: async (req, res) => {
     const userId = req.user.id;
+    const type = req.query.type;
     if (!userId) {
       throw new Error("User ID is required.");
     }
     try {
-      const result = await budgetService.getBudget(userId);
+      const result = await budgetService.getBudget(userId, type);
       return successResponse(res, 200, "fetched", result);
     } catch (error) {
       return errorResponse(res, 500, error.message, error.stack);
