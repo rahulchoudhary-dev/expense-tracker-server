@@ -42,7 +42,16 @@ const authController = {
   },
 
   forgotPassword: async (req, res) => {
+    console.log("code ids here", req.body);
     const emailId = req.body.email;
+    if (!emailId) {
+      return errorResponse(
+        res,
+        400,
+        "Email ID are required",
+        "Email ID are required"
+      );
+    }
     try {
       const result = await authService.forgotPassword(emailId);
       return successResponse(res, 200, result.message, "Send");
