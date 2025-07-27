@@ -41,7 +41,27 @@ const budgetController = {
     }
     try {
       const result = await budgetService.deleteBudget(userId, budgetId);
-      return successResponse(res, 200, "deleted", result);
+      return successResponse(res, 200, "deleted successfully", result);
+    } catch (error) {
+      return errorResponse(res, 500, error.message, error.stack);
+    }
+  },
+  updateBudget: async (req, res) => {
+    const userId = req.user?.id;
+    const budgetId = req.body?.id;
+    const updatedData = req.body;
+    if (!userId || !budgetId) {
+      return res
+        .status(400)
+        .json({ message: "User ID and Budget ID are required." });
+    }
+    try {
+      const result = await budgetService.updateBudget(
+        userId,
+        budgetId,
+        updatedData
+      );
+      return successResponse(res, 200, "update successfully", result);
     } catch (error) {
       return errorResponse(res, 500, error.message, error.stack);
     }

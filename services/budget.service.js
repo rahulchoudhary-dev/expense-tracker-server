@@ -58,6 +58,7 @@ const budgetService = {
           ...whereClouse,
         },
         distinct: true,
+        order: [["id", "ASC"]],
       });
 
       // Monthly count and sum
@@ -120,6 +121,33 @@ const budgetService = {
       });
 
       return { message: "Budget deleted successfully" };
+    } catch (error) {
+      throw handleSequelizeError(error);
+    }
+  },
+  updateBudget: async (userId, budgetId, updatedData) => {
+    delete updatedData.id;
+
+    try {
+      const existingBudget = await Budget.findOne({
+        where: {
+          id: budgetId,
+          userId: userId,
+        },
+      });
+
+      if (!existingBudget) {
+        throw new Error("Budget not found for this user.");
+      }
+
+      await Budget.update(updatedData, {
+        where: {
+          id: budgetId,
+          userId,
+        },
+      });
+
+      return { message: "Budget updated successfully" };
     } catch (error) {
       throw handleSequelizeError(error);
     }
