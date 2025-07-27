@@ -31,6 +31,21 @@ const budgetController = {
       return errorResponse(res, 500, error.message, error.stack);
     }
   },
+  deleteBudget: async (req, res) => {
+    const userId = req.user?.id;
+    const budgetId = req.params?.id;
+    if (!userId || !budgetId) {
+      return res
+        .status(400)
+        .json({ message: "User ID and Budget ID are required." });
+    }
+    try {
+      const result = await budgetService.deleteBudget(userId, budgetId);
+      return successResponse(res, 200, "deleted", result);
+    } catch (error) {
+      return errorResponse(res, 500, error.message, error.stack);
+    }
+  },
 };
 
 module.exports = budgetController;
