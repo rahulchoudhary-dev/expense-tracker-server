@@ -100,6 +100,30 @@ const budgetService = {
       throw handleSequelizeError(error);
     }
   },
+  deleteBudget: async (userId, budgetId) => {
+    try {
+      const budgetData = await Budget.findOne({
+        where: {
+          id: budgetId,
+          userId: userId,
+        },
+      });
+
+      if (!budgetData) {
+        throw new Error("Budget not found for this user.");
+      }
+
+      await Budget.destroy({
+        where: {
+          id: budgetId,
+        },
+      });
+
+      return { message: "Budget deleted successfully" };
+    } catch (error) {
+      throw handleSequelizeError(error);
+    }
+  },
 };
 
 module.exports = budgetService;
