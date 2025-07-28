@@ -1,5 +1,7 @@
 const { Op } = require("sequelize");
 const Expense = require("../models/expense.js");
+const Budget = require("../models/budget.js");
+
 const handleSequelizeError = require("../utils/sequelizeErrorHandler.js");
 const User = require("../models/user.js");
 const Category = require("../models/category.js");
@@ -7,13 +9,56 @@ const PaymentMethods = require("../models/paymentMethods.js");
 const cloudinary = require("../utils/upload.js");
 const ExpenseAttachment = require("../models/expenseAttachments.js");
 const fs = require("fs");
+const sequelize = require("../config/database.js");
 
 const expenseService = {
-  createExpenseService: async (data) => {
+  createExpense: async (userId, expenseData) => {
+    const transaction = await sequelize.transaction();
     try {
-      const result = await Expense.create(data);
+      const { date, amount } = expenseData;
+      const expenseDate = new Date(date);
+      const month = expenseDate.getMonth() + 1;
+      const year = expenseDate.getFullYear();
+
+      // Fetch both yearly and monthly budgets in parallel
+      const [yearlyBudget, monthlyBudget] = await Promise.all([
+        Budget.findOne({
+          where: { type: "yearly", year, userId },
+          transaction,
+          lock: transaction.LOCK.UPDATE,
+        }),
+        Budget.findOne({
+          where: { type: "monthly", year, month, userId },
+          transaction,
+          lock: transaction.LOCK.UPDATE,
+        }),
+      ]);
+
+      // Safely increment usedAmount if budgets exist
+      if (yearlyBudget) {
+        await yearlyBudget.increment("usedAmount", {
+          by: amount,
+          transaction,
+        });
+      }
+
+      if (monthlyBudget) {
+        await monthlyBudget.increment("usedAmount", {
+          by: amount,
+          transaction,
+        });
+      }
+
+      // Create the expense record
+      const result = await Expense.create(
+        { ...expenseData, userId },
+        { transaction }
+      );
+
+      await transaction.commit();
       return result;
     } catch (error) {
+      await transaction.rollback();
       throw handleSequelizeError(error);
     }
   },
@@ -190,16 +235,89 @@ const expenseService = {
       throw handleSequelizeError(error);
     }
   },
-  editExpense: async (expenseId, data) => {
+  editExpense: async (userId, expenseId, expenseData) => {
+    const transaction = await sequelize.transaction();
+
+    // Remove fields that should not be updated manually
+    delete expenseData.userId;
+    delete expenseData.id;
+
     try {
-      const resp = await Expense.update(data, {
-        where: {
-          id: expenseId,
-        },
-        returning: true,
+      const oldExpense = await Expense.findOne({
+        where: { userId, id: expenseId },
+        transaction,
+        lock: transaction.LOCK.UPDATE,
       });
-      return resp[1][0];
+
+      if (!oldExpense) {
+        throw new Error("Expense not found");
+      }
+
+      const oldAmount = oldExpense.amount;
+      const newAmount = expenseData.amount;
+
+      // If amount is unchanged, just update other fields
+      if (oldAmount === newAmount) {
+        const [_, updatedRows] = await Expense.update(expenseData, {
+          where: { id: expenseId, userId },
+          returning: true,
+          transaction,
+        });
+
+        await transaction.commit();
+        return updatedRows[0];
+      }
+
+      // Amount changed — update budgets accordingly
+      const expenseDate = new Date(expenseData.date || oldExpense.date);
+      const month = expenseDate.getMonth() + 1;
+      const year = expenseDate.getFullYear();
+
+      const [yearlyBudget, monthlyBudget] = await Promise.all([
+        Budget.findOne({
+          where: { type: "yearly", year, userId },
+          transaction,
+          lock: transaction.LOCK.UPDATE,
+        }),
+        Budget.findOne({
+          where: { type: "monthly", year, month, userId },
+          transaction,
+          lock: transaction.LOCK.UPDATE,
+        }),
+      ]);
+
+      if (yearlyBudget) {
+        await yearlyBudget.decrement("usedAmount", {
+          by: oldAmount,
+          transaction,
+        });
+        await yearlyBudget.increment("usedAmount", {
+          by: newAmount,
+          transaction,
+        });
+      }
+
+      if (monthlyBudget) {
+        await monthlyBudget.decrement("usedAmount", {
+          by: oldAmount,
+          transaction,
+        });
+        await monthlyBudget.increment("usedAmount", {
+          by: newAmount,
+          transaction,
+        });
+      }
+
+      const [_, updatedRows] = await Expense.update(expenseData, {
+        where: { id: expenseId, userId },
+        returning: true,
+        transaction,
+      });
+
+      await transaction.commit();
+      return updatedRows[0];
     } catch (error) {
+      await transaction.rollback();
       throw handleSequelizeError(error);
     }
   },
