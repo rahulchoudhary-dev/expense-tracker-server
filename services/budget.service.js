@@ -1,4 +1,4 @@
-const Budget = require("../models/budget"); // Adjust path as needed
+const Budget = require("../models/budget");
 const handleSequelizeError = require("../utils/sequelizeErrorHandler");
 
 const budgetService = {
@@ -41,7 +41,6 @@ const budgetService = {
       throw handleSequelizeError(error);
     }
   },
-
   getBudget: async (userId, type) => {
     try {
       const whereClouse = {};
@@ -127,6 +126,7 @@ const budgetService = {
   },
   updateBudget: async (userId, budgetId, updatedData) => {
     delete updatedData.id;
+    delete updatedData.usedAmount;
 
     try {
       const existingBudget = await Budget.findOne({
