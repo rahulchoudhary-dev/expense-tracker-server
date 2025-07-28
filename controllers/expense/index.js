@@ -6,9 +6,11 @@ const {
 
 const expenseController = {
   createExpense: async (req, res) => {
-    const data = req.body;
+    const expenseData = req.body;
+    delete expenseData.userId;
+    const userId = req.user.id;
     try {
-      const result = await expenseService.createExpenseService(data);
+      const result = await expenseService.createExpense(userId, expenseData);
       return successResponse(res, 201, "Expense Created", result);
     } catch (error) {
       return errorResponse(res, 500, error.message, error.stack);
@@ -60,11 +62,16 @@ const expenseController = {
   editExpense: async (req, res) => {
     try {
       const expenseId = req.params.id;
-      if (!expenseId) {
-        throw new Error("Expense ID is required");
+      const userId = req.user.id;
+      const expenseData = req.body;
+      if (!expenseId || !userId || !expenseData) {
+        throw new Error("Expense ID , userId, expenseData is required");
       }
-      const data = req.body;
-      const resp = await expenseService.editExpense(expenseId, data);
+      const resp = await expenseService.editExpense(
+        userId,
+        expenseId,
+        expenseData
+      );
       return successResponse(res, 200, "Expense updated successfully", resp);
     } catch (error) {
       return errorResponse(res, 400, error.message || "Something went wrong.");
@@ -108,9 +115,8 @@ const expenseController = {
       return errorResponse(res, 400, "Attachment ID is required.");
     }
     try {
-      const result = await expenseService.deleteExpenseAttachmentById(
-        attachmentId
-      );
+      const result =
+        await expenseService.deleteExpenseAttachmentById(attachmentId);
       return successResponse(res, 200, "", result.message);
     } catch (error) {
       return errorResponse(res, 400, error.message || "Something went wrong.");

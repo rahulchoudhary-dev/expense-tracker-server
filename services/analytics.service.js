@@ -82,7 +82,7 @@ const analyticsService = {
 
       const data = {
         count: result?.length,
-        resp,
+        resp: result,
       };
       return data;
     } catch (error) {

@@ -45,6 +45,10 @@ const Budget = sequelize.define(
         min: 0,
       },
     },
+    usedAmount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: "Budgets",
