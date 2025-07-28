@@ -1,5 +1,7 @@
 const Budget = require("../models/budget");
 const handleSequelizeError = require("../utils/sequelizeErrorHandler");
+const Expense = require("../models/expense.js");
+const { Op } = require("sequelize");
 
 const budgetService = {
   createBudget: async (userId, budgetData) => {
@@ -31,8 +33,47 @@ const budgetService = {
         }
       }
 
+      let getExpenseAmount = 0;
+      if (budgetData.type == "yearly") {
+        const budgetYear = budgetData.year;
+        const yearStartDate = new Date(`${budgetYear}-01-01`);
+        const newYearStartDate = new Date(`${Number(budgetYear) + 1}-01-01`);
+        getExpenseAmount = await Expense.sum("amount", {
+          where: {
+            userId,
+            date: {
+              [Op.gte]: yearStartDate,
+              [Op.lt]: newYearStartDate,
+            },
+          },
+        });
+      }
+
+      let getMonthExpenseAmount = 0;
+      if (budgetData.type == "monthly") {
+        const month = Number(budgetData.month);
+        const year = Number(budgetData.year);
+        const monthStartDate = new Date(year, month - 1, 1);
+        const nextMonthStartDate = new Date(year, month, 1);
+        getMonthExpenseAmount = await Expense.sum("amount", {
+          where: {
+            userId,
+            date: {
+              [Op.gte]: monthStartDate,
+              [Op.lt]: nextMonthStartDate,
+            },
+          },
+        });
+      }
+
+      const usedAmount =
+        budgetData.type === "monthly"
+          ? getMonthExpenseAmount || 0
+          : getExpenseAmount || 0;
+
       const result = await Budget.create({
         ...budgetData,
+        usedAmount,
         userId,
       });
 
