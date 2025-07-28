@@ -47,6 +47,7 @@ const Budget = sequelize.define(
     },
     usedAmount: {
       type: DataTypes.INTEGER,
+      defaultValue: 0,
       allowNull: true,
     },
   },
