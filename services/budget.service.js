@@ -193,6 +193,35 @@ const budgetService = {
       throw handleSequelizeError(error);
     }
   },
+  getBudgetQuickStats: async (userId) => {
+    try {
+      const totalBudgets = await Budget.count({ where: { userId } });
+
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+
+      const currentMonthBudget = await Budget.findOne({
+        where: {
+          userId,
+          month: currentMonth,
+          year: currentYear,
+        },
+      });
+
+      const amount = currentMonthBudget?.amount || 0;
+      const usedAmount = currentMonthBudget?.usedAmount || 0;
+
+      const result = {
+        totalActiveBudgets: totalBudgets,
+        currentMonthBudgetAmount: amount,
+        remainingAmount: amount - usedAmount,
+      };
+
+      return result;
+    } catch (error) {
+      throw handleSequelizeError(error);
+    }
+  },
 };
 
 module.exports = budgetService;

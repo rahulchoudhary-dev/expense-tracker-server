@@ -66,6 +66,23 @@ const budgetController = {
       return errorResponse(res, 500, error.message, error.stack);
     }
   },
+  getBudgetQuickStats: async (req, res) => {
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID are required." });
+    }
+    try {
+      const result = await budgetService.getBudgetQuickStats(userId);
+      return successResponse(
+        res,
+        200,
+        "quick states successfully fetched",
+        result
+      );
+    } catch (error) {
+      return errorResponse(res, 500, error.message, error.stack);
+    }
+  },
 };
 
 module.exports = budgetController;
