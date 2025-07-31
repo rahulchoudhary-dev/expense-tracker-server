@@ -36,7 +36,8 @@
     "pm2": "^6.0.8",
     "resend": "^4.7.0",
     "sequelize": "^6.37.7",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.3"

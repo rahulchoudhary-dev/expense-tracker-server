@@ -7,6 +7,7 @@ const expenseRouter = require("../v1Routes/expense");
 const authRoutes = require("./auth");
 const analyticsRoutes = require("./analytics");
 const budgetRoutes = require("./budget");
+const contactSupportRoutes = require("./contactSupport");
 
 const authMiddleware = require("../../middleware/authMiddleware");
 
@@ -21,5 +22,5 @@ router.use("/expense", authMiddleware, expenseRouter);
 router.use("/analytics-charts", authMiddleware, analyticsRoutes);
 
 router.use("/budget", authMiddleware, budgetRoutes);
-
+router.use("/contact-support", authMiddleware, contactSupportRoutes);
 module.exports = router;
