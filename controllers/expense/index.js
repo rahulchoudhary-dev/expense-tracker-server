@@ -41,11 +41,11 @@ const expenseController = {
       return errorResponse(res, 400, "Expense ID is required");
     }
     try {
-      const expense = await expenseService.getExpenseById(expenseId);
-      if (!expense) {
+      const result = await expenseService.getExpenseById(expenseId);
+      if (!result) {
         return errorResponse(res, 404, "Expense not found");
       }
-      return successResponse(res, 200, "Expense fetched successfully", expense);
+      return successResponse(res, 200, "Expense fetched successfully", result);
     } catch (error) {
       return errorResponse(res, 500, error?.message || "Internal Server Error");
     }
