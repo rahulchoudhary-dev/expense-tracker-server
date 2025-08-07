@@ -8,6 +8,7 @@ const authRoutes = require("./auth");
 const analyticsRoutes = require("./analytics");
 const budgetRoutes = require("./budget");
 const contactSupportRoutes = require("./contactSupport");
+const faqRoutes = require("./faq");
 
 const authMiddleware = require("../../middleware/authMiddleware");
 
@@ -23,4 +24,7 @@ router.use("/analytics-charts", authMiddleware, analyticsRoutes);
 
 router.use("/budget", authMiddleware, budgetRoutes);
 router.use("/contact-support", authMiddleware, contactSupportRoutes);
+
+router.use("/faq", faqRoutes);
+
 module.exports = router;
