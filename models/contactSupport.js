@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const User = require("../models/user");
+const FAQCategory = require("./faqCategories");
 
 const ContactSupport = sequelize.define(
   "ContactSupport",
@@ -23,9 +24,13 @@ const ContactSupport = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    category: {
-      type: DataTypes.STRING,
+    categoryId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: FAQCategory,
+        key: "id",
+      },
     },
     subject: {
       type: DataTypes.STRING,
@@ -41,5 +46,8 @@ const ContactSupport = sequelize.define(
     timestamps: true,
   }
 );
-
+ContactSupport.belongsTo(FAQCategory, {
+  foreignKey: "categoryId",
+  as: "category",
+});
 module.exports = ContactSupport;
