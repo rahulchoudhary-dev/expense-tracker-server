@@ -37,7 +37,6 @@ const contactSupportController = {
         );
       }
 
-      console.error("Unexpected error:", error);
       return errorResponse(res, 500, error?.message || "Internal Server Error");
     }
   },

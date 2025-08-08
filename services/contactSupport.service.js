@@ -3,7 +3,6 @@ const handleSequelizeError = require("../utils/sequelizeErrorHandler");
 
 const contactSupportService = {
   createContactSupport: async (userId, data) => {
-    console.log("data", data);
     try {
       const result = await ContactSupport.create({ ...data, userId });
       return result;
