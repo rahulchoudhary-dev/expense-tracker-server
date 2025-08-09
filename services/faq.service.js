@@ -20,7 +20,7 @@ const faqService = {
           as: "category",
           attributes: ["name"],
         },
-        attributes: ["question", "answer"],
+        attributes: ["question", "answer", "id"],
       });
       return result;
     } catch (error) {
