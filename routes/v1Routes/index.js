@@ -10,6 +10,8 @@ const budgetRoutes = require("./budget");
 const contactSupportRoutes = require("./contactSupport");
 const faqRoutes = require("./faq");
 
+const ratingRoutes = require("./ratings");
+
 const authMiddleware = require("../../middleware/authMiddleware");
 
 router.use("/auth", authRoutes);
@@ -25,6 +27,6 @@ router.use("/analytics-charts", authMiddleware, analyticsRoutes);
 router.use("/budget", authMiddleware, budgetRoutes);
 router.use("/contact-support", authMiddleware, contactSupportRoutes);
 
-router.use("/faq", faqRoutes);
-
+router.use("/faq", authMiddleware, faqRoutes);
+router.use("/ratings", authMiddleware, ratingRoutes);
 module.exports = router;
