@@ -7,27 +7,57 @@ const {
 const { ratingSchema } = require("../../validations/ratings.validations");
 
 const ratingController = {
-  addRating: async (req, res) => {
-    const userId = req.user.id;
-    const data = req.body;
+  createOrUpdateRating: async (req, res) => {
+    const userId = req.user?.id;
     if (!userId) {
-      return res.status(400).json({ message: "User ID are required." });
+      return errorResponse(res, 400, "User ID is required.");
     }
+
     try {
-      const parsedData = await ratingSchema.parseAsync(data);
-      delete parsedData.userId;
-      const result = await ratingService.addRating(userId, parsedData);
-      return successResponse(res, 200, "Ratings added successfully", result);
+      const parsedData = await ratingSchema.parseAsync(req.body);
+      delete parsedData.userId; // Prevent overriding userId
+      const result = await ratingService.createOrUpdateRating(
+        userId,
+        parsedData
+      );
+
+      return successResponse(res, 201, "Rating created successfully.", result);
     } catch (error) {
       if (error instanceof ZodError) {
         return errorResponse(
           res,
-          500,
-          error?._zod?.def[0]?.message || "Internal Server Error"
+          400,
+          error.errors?.[0]?.message || "Validation error."
         );
       }
+      return errorResponse(
+        res,
+        500,
+        error?.message || "Failed to create rating."
+      );
+    }
+  },
 
-      return errorResponse(res, 500, error?.message || "Internal Server Error");
+  getUserRatings: async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      return errorResponse(res, 400, "User ID is required.");
+    }
+
+    try {
+      const result = await ratingService.getUserRatings(userId);
+      return successResponse(
+        res,
+        200,
+        "User ratings retrieved successfully.",
+        result
+      );
+    } catch (error) {
+      return errorResponse(
+        res,
+        500,
+        error?.message || "Failed to fetch user ratings."
+      );
     }
   },
 };
