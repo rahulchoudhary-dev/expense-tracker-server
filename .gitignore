@@ -1,5 +1,5 @@
 node_modules
-.env
+.env*
 command.txt
 task.txt
 SQLQuery.txt
